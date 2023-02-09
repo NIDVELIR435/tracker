@@ -1,0 +1,53 @@
+#!/bin/sh
+# Redirect output to stderr.
+exec 1>&2
+# enable user input
+#exec < /dev/tty
+
+GREEN_PRINT_COLOR=`tput setaf 2`;
+BLUE_PRINT_COLOR=`tput setaf 4`;
+YELLOW_PRINT_COLOR=`tput setaf 3`;
+RESET_PRINT_COLOR=`tput sgr0`;
+RED_PRINT_COLOR=`tput setaf 1`;
+
+
+# STRONG CHECK
+
+CONSOLE_REGEXP='console.log'
+if test $(git diff --cached | grep $CONSOLE_REGEXP | wc -l) != 0
+then
+  echo "${YELLOW_PRINT_COLOR}$(exec git diff --cached | grep -ne $CONSOLE_REGEXP)${RESET_PRINT_COLOR}"
+  read -p "${RED_PRINT_COLOR}There are some occurrences of console.[${YELLOW_PRINT_COLOR}log, dir, error, etc...${RED_PRINT_COLOR}] at your modification. Are you sure want to continue? (y/n)${RESET_PRINT_COLOR}" YN
+  echo $YN | grep ^[Yy]$
+    if [ $? -eq 0 ]
+    then
+      exit 0; #THE USER WANTS TO CONTINUE
+    else
+      exit 1; #THE USER DONT WANT TO CONTINUE SO ROLLBACK
+    fi
+fi
+
+IGNORE_REGEXP='@ts-ignore'
+if test $(git diff --cached | grep $IGNORE_REGEXP | wc -l) != 0
+then
+  echo "${YELLOW_PRINT_COLOR}$(exec git diff --cached | grep -ne $IGNORE_REGEXP)${RESET_PRINT_COLOR}"
+  echo "${RED_PRINT_COLOR}There are some occurrences of ${YELLOW_PRINT_COLOR}${IGNORE_REGEXP}${RED_PRINT_COLOR} at your modification. Use ${GREEN_PRINT_COLOR}//@ts-expect-error${RED_PRINT_COLOR} instead and describe reason why you want ignore ts checks, for example: [${YELLOW_PRINT_COLOR}//@ts-expect-error because typeorm cannot resolve a type.${RED_PRINT_COLOR}]${RESET_PRINT_COLOR}"
+  exit 1; #ROLLBACK
+fi
+
+
+
+#WEAK CHECK WITH WAYS (if you need use it);
+
+#if test $(git diff --cached | grep $consoleregexp | wc -l) != 0
+#then
+#  exec git diff --cached | grep -ne $consoleregexp
+#  read -p "There are some occurrences of console.log at your modification. If you want to use console, you should use logger instead. Are you sure want to continue? (y/n)" yn
+#  echo $yn | grep ^[Yy]$
+#  if [ $? -eq 0 ]
+#  then
+#    exit 0; #THE USER WANTS TO CONTINUE
+#  else
+#    exit 1; # THE USER DONT WANT TO CONTINUE SO ROLLBACK
+#  fi
+#fi
