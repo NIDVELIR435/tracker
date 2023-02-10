@@ -3,7 +3,7 @@ import process from "process";
 import * as dotenv from "dotenv";
 import {JSDOM} from "jsdom";
 import {getDayInfo} from "./date-handler";
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import {isNil} from "lodash";
 dotenv.config()
 
@@ -30,8 +30,8 @@ export const getTrackingInfo =  async (id: number, filter: FilterEnum) => {
         't[]': ['hours']
     })
 
-    const config = {
-        headers: { Cookie }
+    const config: AxiosRequestConfig = {
+        headers: { Cookie },
     };
 
     const response = await axios.get<string>(`${baseUrl}?${params}`, config)
