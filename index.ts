@@ -27,4 +27,8 @@ app.get('/last-day', async (_request: Request, response: Response) => {
     response.send(await configureInfo(values, keys, FilterEnum.LAST_DAY));
 })
 
+app.get('/today', async (_request: Request, response: Response) => {
+    response.send(await configureInfo(values, keys, FilterEnum.TODAY));
+})
+
 app.listen(port, () => console.info(`App listening on port ${port}`))

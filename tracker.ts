@@ -11,6 +11,7 @@ const Cookie = process.env.COOKIE ?? null;
 const baseUrl = process.env.BASE_URL ?? null;
 
 export enum FilterEnum {
+    TODAY = 'td',
     LAST_DAY = 'ld',
     LAST_WEEK = 'lw',
     THIS_WEEK = 'w',
